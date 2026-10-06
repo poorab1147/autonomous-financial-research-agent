@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Financial Research Agent</title>
+
     <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -11,128 +13,278 @@
 
     <div class="container">
 
-        <header class="hero">
-            <div class="badge">AI-POWERED FINANCIAL RESEARCH</div>
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
 
-            <h1>Financial Research Agent</h1>
+        <header class="hero">
+
+            <div class="badge">
+                AI-POWERED FINANCIAL RESEARCH
+            </div>
+
+            <h1>
+                Financial Research Agent
+            </h1>
 
             <p>
                 Get an AI-generated research report for any supported stock.
             </p>
+
         </header>
+
+
+        <!-- =====================================================
+             SEARCH
+        ====================================================== -->
 
         <section class="search-card">
 
-            <label for="ticker">Stock Ticker</label>
+            <label for="ticker">
+                Stock Ticker
+            </label>
 
             <div class="search-row">
+
                 <input
                     type="text"
                     id="ticker"
-                    placeholder="e.g. AAPL, MSFT, TSLA"
+                    placeholder="e.g. AAPL, MSFT, RELIANCE.NS"
                     maxlength="30"
                     autocomplete="off"
                 >
 
-                <button id="researchBtn">
+                <button
+                    id="researchBtn"
+                    type="button"
+                >
                     Research Stock
                 </button>
+
             </div>
 
             <p class="hint">
-                Enter a stock ticker such as AAPL, MSFT, GOOGL or TSLA.
+                Enter a stock ticker such as AAPL, MSFT, GOOGL,
+                TSLA or RELIANCE.NS.
             </p>
 
         </section>
 
-        <div id="loading" class="loading hidden">
+
+        <!-- =====================================================
+             LOADING
+        ====================================================== -->
+
+        <div
+            id="loading"
+            class="loading hidden"
+        >
+
             <div class="spinner"></div>
-            <p>Researching company...</p>
+
+            <p>
+                Researching company...
+            </p>
+
             <span>
                 Fetching financial data, recent news and analyzing risks.
             </span>
+
         </div>
 
-        <div id="error" class="error hidden"></div>
 
-        <main id="report" class="hidden">
+        <!-- =====================================================
+             ERROR
+        ====================================================== -->
+
+        <div
+            id="error"
+            class="error hidden"
+        ></div>
+
+
+        <!-- =====================================================
+             RESEARCH REPORT
+        ====================================================== -->
+
+        <main
+            id="report"
+            class="hidden"
+        >
+
+            <!-- Company Header -->
 
             <section class="company-header">
+
                 <div>
-                    <span id="companyTicker" class="ticker"></span>
-                    <h2 id="companyName"></h2>
+
+                    <span
+                        id="companyTicker"
+                        class="ticker"
+                    ></span>
+
+                    <h2
+                        id="companyName"
+                    ></h2>
+
                 </div>
 
                 <div class="timestamp">
-                    <span>Research generated</span>
-                    <strong id="timestamp"></strong>
+
+                    <span>
+                        Research generated
+                    </span>
+
+                    <strong
+                        id="timestamp"
+                    ></strong>
+
                 </div>
+
             </section>
+
+
+            <!-- =================================================
+                 FINANCIAL METRICS
+            ================================================== -->
 
             <section class="metrics-grid">
 
                 <div class="metric-card">
-                    <span>Current Price</span>
-                    <strong id="currentPrice">—</strong>
+
+                    <span>
+                        Current Price
+                    </span>
+
+                    <strong id="currentPrice">
+                        —
+                    </strong>
+
                 </div>
 
-                <div class="metric-card">
-                    <span>P/E Ratio</span>
-                    <strong id="peRatio">—</strong>
-                </div>
 
                 <div class="metric-card">
-                    <span>Market Cap</span>
-                    <strong id="marketCap">—</strong>
+
+                    <span>
+                        P/E Ratio
+                    </span>
+
+                    <strong id="peRatio">
+                        —
+                    </strong>
+
                 </div>
 
-                <div class="metric-card">
-                    <span>52-Week High</span>
-                    <strong id="weekHigh">—</strong>
-                </div>
 
                 <div class="metric-card">
-                    <span>52-Week Low</span>
-                    <strong id="weekLow">—</strong>
+
+                    <span>
+                        Market Cap
+                    </span>
+
+                    <strong id="marketCap">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <span>
+                        52-Week High
+                    </span>
+
+                    <strong id="weekHigh">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <span>
+                        52-Week Low
+                    </span>
+
+                    <strong id="weekLow">
+                        —
+                    </strong>
+
                 </div>
 
             </section>
 
+
+            <!-- =================================================
+                 RISK ANALYSIS
+            ================================================== -->
+
             <section class="section-card">
 
                 <div class="section-title">
-                    <h3>Risk Analysis</h3>
-                    <span id="sentiment" class="sentiment"></span>
+
+                    <h3>
+                        Risk Analysis
+                    </h3>
+
+                    <span
+                        id="sentiment"
+                        class="sentiment"
+                    ></span>
+
                 </div>
 
                 <ul id="risks"></ul>
 
             </section>
 
+
+            <!-- =================================================
+                 SOURCES
+            ================================================== -->
+
             <section class="section-card">
 
                 <div class="section-title">
-                    <h3>Sources</h3>
+
+                    <h3>
+                        Sources
+                    </h3>
+
                 </div>
 
-                <div id="sources" class="sources"></div>
+                <div
+                    id="sources"
+                    class="sources"
+                ></div>
 
             </section>
 
         </main>
 
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
         <footer>
+
             <p>
                 Autonomous Financial Research Agent
             </p>
+
             <span>
-                Gemini · LangChain · FastAPI · yfinance · Web Search
+                Gemini · LangChain · FastAPI · Finnhub · Indian Market API · Web Search
             </span>
+
         </footer>
 
     </div>
 
-    <script src="/app.js"></script>
+
+    <script src="/app.js?v=3"></script>
 
 </body>
 </html>

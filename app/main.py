@@ -23,9 +23,10 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Autonomous Financial Research Agent",
     description=(
-        "An AI-powered financial research agent using "
-        "Gemini, LangChain, yfinance, and web search."
-    ),
+    "An AI-powered financial research agent using "
+    "Gemini, LangChain, Finnhub, Indian market data, "
+    "and web search."
+),
     version="1.0.0",
 )
 

@@ -7,10 +7,27 @@ load_dotenv()
 
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
+INDIAN_API_KEY = os.getenv("INDIAN_API_KEY")
+
 
 if not GEMINI_API_KEY:
     raise RuntimeError(
         "GEMINI_API_KEY is not set. "
+        "Please add it to the .env file."
+    )
+
+
+if not FINNHUB_API_KEY:
+    raise RuntimeError(
+        "FINNHUB_API_KEY is not set. "
+        "Please add it to the .env file."
+    )
+
+
+if not INDIAN_API_KEY:
+    raise RuntimeError(
+        "INDIAN_API_KEY is not set. "
         "Please add it to the .env file."
     )
 
