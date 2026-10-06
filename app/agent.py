@@ -15,10 +15,7 @@ from app.tools import get_stock_data, get_recent_news
 llm = ChatGoogleGenerativeAI(
     model=GEMINI_MODEL,
     google_api_key=GEMINI_API_KEY,
-    temperature=0,
 )
-
-
 # ---------------------------------------------------------
 # Tools
 # ---------------------------------------------------------
