@@ -1,13 +1,24 @@
 import logging
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.staticfiles import StaticFiles
 
 from app.agent import research_company
 from app.logging_config import setup_logging
 from app.schemas import CompanyOverview
 
+
+# --------------------------------------------------
+# Logging
+# --------------------------------------------------
+
 setup_logging()
 logger = logging.getLogger(__name__)
+
+
+# --------------------------------------------------
+# FastAPI application
+# --------------------------------------------------
 
 app = FastAPI(
     title="Autonomous Financial Research Agent",
@@ -19,13 +30,9 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-def root():
-    return {
-        "message": "Autonomous Financial Research Agent API",
-        "status": "running",
-    }
-
+# --------------------------------------------------
+# Health check
+# --------------------------------------------------
 
 @app.get("/health")
 def health():
@@ -34,6 +41,10 @@ def health():
         "service": "financial-research-agent",
     }
 
+
+# --------------------------------------------------
+# Financial research endpoint
+# --------------------------------------------------
 
 @app.get("/research", response_model=CompanyOverview)
 def research(
@@ -57,6 +68,7 @@ def research(
     except Exception as exc:
         error_message = str(exc)
 
+        # Handle Gemini quota/rate-limit errors
         if "429" in error_message or "RESOURCE_EXHAUSTED" in error_message:
             logger.warning("Gemini quota exceeded for %s", ticker)
 
@@ -69,9 +81,34 @@ def research(
                 ),
             ) from exc
 
+        # Handle unexpected errors
         logger.exception("Research failed for %s", ticker)
 
         raise HTTPException(
             status_code=500,
             detail="Financial research failed.",
         ) from exc
+
+
+# --------------------------------------------------
+# Frontend
+# --------------------------------------------------
+#
+# This serves:
+#
+#   /              -> frontend/index.html
+#   /style.css     -> frontend/style.css
+#   /app.js        -> frontend/app.js
+#
+# API routes above (/health, /research) continue
+# to work normally.
+# --------------------------------------------------
+
+app.mount(
+    "/",
+    StaticFiles(
+        directory="frontend",
+        html=True,
+    ),
+    name="frontend",
+)

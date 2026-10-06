@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Research Agent</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="hero">
+            <div class="badge">AI-POWERED FINANCIAL RESEARCH</div>
+
+            <h1>Financial Research Agent</h1>
+
+            <p>
+                Get an AI-generated research report for any supported stock.
+            </p>
+        </header>
+
+        <section class="search-card">
+
+            <label for="ticker">Stock Ticker</label>
+
+            <div class="search-row">
+                <input
+                    type="text"
+                    id="ticker"
+                    placeholder="e.g. AAPL, MSFT, TSLA"
+                    maxlength="30"
+                    autocomplete="off"
+                >
+
+                <button id="researchBtn">
+                    Research Stock
+                </button>
+            </div>
+
+            <p class="hint">
+                Enter a stock ticker such as AAPL, MSFT, GOOGL or TSLA.
+            </p>
+
+        </section>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Researching company...</p>
+            <span>
+                Fetching financial data, recent news and analyzing risks.
+            </span>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+
+        <main id="report" class="hidden">
+
+            <section class="company-header">
+                <div>
+                    <span id="companyTicker" class="ticker"></span>
+                    <h2 id="companyName"></h2>
+                </div>
+
+                <div class="timestamp">
+                    <span>Research generated</span>
+                    <strong id="timestamp"></strong>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+
+                <div class="metric-card">
+                    <span>Current Price</span>
+                    <strong id="currentPrice">—</strong>
+                </div>
+
+                <div class="metric-card">
+                    <span>P/E Ratio</span>
+                    <strong id="peRatio">—</strong>
+                </div>
+
+                <div class="metric-card">
+                    <span>Market Cap</span>
+                    <strong id="marketCap">—</strong>
+                </div>
+
+                <div class="metric-card">
+                    <span>52-Week High</span>
+                    <strong id="weekHigh">—</strong>
+                </div>
+
+                <div class="metric-card">
+                    <span>52-Week Low</span>
+                    <strong id="weekLow">—</strong>
+                </div>
+
+            </section>
+
+            <section class="section-card">
+
+                <div class="section-title">
+                    <h3>Risk Analysis</h3>
+                    <span id="sentiment" class="sentiment"></span>
+                </div>
+
+                <ul id="risks"></ul>
+
+            </section>
+
+            <section class="section-card">
+
+                <div class="section-title">
+                    <h3>Sources</h3>
+                </div>
+
+                <div id="sources" class="sources"></div>
+
+            </section>
+
+        </main>
+
+        <footer>
+            <p>
+                Autonomous Financial Research Agent
+            </p>
+            <span>
+                Gemini · LangChain · FastAPI · yfinance · Web Search
+            </span>
+        </footer>
+
+    </div>
+
+    <script src="/app.js"></script>
+
+</body>
+</html>
