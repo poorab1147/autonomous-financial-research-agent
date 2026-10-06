@@ -1,612 +1,529 @@
-\# Autonomous Financial Research Agent
+# Autonomous Financial Research Agent
 
+An AI-powered financial research agent that autonomously gathers stock
+market data and recent financial news, analyzes the information using
+Gemini, identifies potential risks, and returns validated structured
+company research through a FastAPI REST API and web interface.
 
+The system supports both **US equities** and **Indian NSE/BSE equities**
+using dedicated market-data providers.
 
-An AI-powered financial research agent that autonomously gathers stock market data and recent financial news, analyzes the information using Gemini, and returns structured company research through a FastAPI REST API.
+## Live Demo
 
+**Production URL:**
+https://autonomous-financial-research-agent-pz4k.onrender.com
 
+The deployed application has been successfully tested with:
 
-\## Overview
+-   `AAPL`
+-   `RELIANCE.NS`
 
+## Overview
 
+Given a stock ticker such as `AAPL` or `RELIANCE.NS`, the agent:
 
-The project combines an LLM agent with external financial and web-search tools.
+1.  Determines the appropriate market-data provider from the ticker.
+2.  Retrieves current and fundamental financial metrics.
+3.  Searches the web for recent financial news.
+4.  Uses Gemini to analyze the collected information.
+5.  Determines recent news sentiment.
+6.  Identifies potential financial and business risks.
+7.  Produces a validated structured response using Pydantic.
+8.  Exposes the research through a FastAPI REST API.
+9.  Renders the result through a browser-based frontend.
 
+### Supported market routing
 
+  Ticker format             Market                         Data provider
+  ------------------------- ------------------------------ ---------------
+  `AAPL`, `MSFT`, `GOOGL`   US / other supported markets   Finnhub
+  `RELIANCE.NS`, `TCS.NS`   NSE                            Indian API
+  `RELIANCE.BO`, `TCS.BO`   BSE                            Indian API
 
-Given a stock ticker such as `AAPL`, the agent:
+## Architecture
 
-
-
-1\. Retrieves financial metrics using `yfinance`
-
-2\. Searches for recent financial news
-
-3\. Uses Gemini to analyze the collected information
-
-4\. Identifies recent news sentiment
-
-5\. Identifies potential financial/business risks
-
-6\. Produces validated structured output using Pydantic
-
-7\. Exposes the research through a FastAPI REST API
-
-
-
-\## Architecture
-
-
-
-```text
-
-Client
-
-&#x20; |
-
-&#x20; v
-
-FastAPI REST API
-
-&#x20; |
-
-&#x20; v
-
-LangChain Agent
-
-&#x20; |
-
-&#x20; v
-
-Gemini 3.8 Flash
-
-&#x20; |
-
-&#x20; +----------------------+
-
-&#x20; |                      |
-
-&#x20; v                      v
-
-yfinance              DDGS Search
-
-&#x20; |                      |
-
-&#x20; v                      v
-
-Stock Metrics        Recent News
-
-&#x20; |                      |
-
-&#x20; +----------+-----------+
-
-&#x20;            |
-
-&#x20;            v
-
-&#x20;      Gemini Analysis
-
-&#x20;            |
-
-&#x20;            v
-
-&#x20;    Pydantic Validation
-
-&#x20;            |
-
-&#x20;            v
-
-&#x20;      Structured JSON
-
+``` text
+                         User
+                          |
+                          v
+                Browser Web Interface
+                 HTML + CSS + JavaScript
+                          |
+                          v
+                    FastAPI REST API
+                          |
+                          v
+                   LangChain Agent
+                          |
+                          v
+                Gemini 3.5 Flash-Lite
+                          |
+                +---------+---------+
+                |                   |
+                v                   v
+         Stock Data Tool       News Search Tool
+                |                   |
+        +-------+-------+           v
+        |               |          DDGS
+        v               v           |
+     Finnhub       Indian API       |
+        |               |           |
+        v               v           |
+     US Stocks      NSE / BSE       |
+        |               |           |
+        +-------+-------+-----------+
+                |
+                v
+          Financial Metrics
+                |
+                v
+        Gemini Risk Analysis
+                |
+                v
+       Pydantic Validation
+                |
+                v
+       Structured JSON Response
+                |
+                v
+          Browser Results
 ```
 
+## Tech Stack
 
+### Backend
 
-\## Tech Stack
+-   Python 3.13
+-   FastAPI
+-   Uvicorn
+-   LangChain
+-   LangChain Google GenAI
+-   Gemini 3.5 Flash-Lite
+-   Pydantic
+-   Requests
+-   python-dotenv
 
+### Financial Data
 
+-   Finnhub --- US stock market data
+-   Indian API --- NSE/BSE market data
 
-\- Python 3.13
+### Web Search
 
-\- FastAPI
+-   DDGS
 
-\- Uvicorn
+### Frontend
 
-\- LangChain
+-   HTML5
+-   CSS3
+-   Vanilla JavaScript
 
-\- LangChain Google GenAI
+### Testing
 
-\- Gemini 3.8 Flash
+-   Pytest
 
-\- yfinance
+### Deployment
 
-\- DDGS
+-   Render
+-   GitHub
 
-\- Pydantic
+## Project Structure
 
-\- python-dotenv
-
-\- Pytest
-
-
-
-\## Project Structure
-
-
-
-```text
-
-financial\_agent/
-
+``` text
+financial_agent/
 │
-
 ├── app/
-
-│   ├── \_\_init\_\_.py
-
+│   ├── __init__.py
 │   ├── agent.py
-
 │   ├── config.py
-
-│   ├── logging\_config.py
-
+│   ├── logging_config.py
 │   ├── main.py
-
 │   ├── schemas.py
-
 │   └── tools.py
-
 │
-
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+│
 ├── tests/
-
-│   ├── test\_schemas.py
-
-│   └── test\_tools.py
-
+│   ├── test_schemas.py
+│   └── test_tools.py
 │
-
 ├── .env
-
 ├── .env.example
-
 ├── .gitignore
-
 ├── pytest.ini
-
 ├── README.md
-
 └── requirements.txt
-
 ```
 
+## Core Components
 
+### LangChain Agent
 
-\## Core Components
+**File:** `app/agent.py`
 
+Creates the autonomous research agent using Gemini and the available
+financial research tools.
 
+The agent uses native tool calling and structured Pydantic output rather
+than relying on manually parsed free-form LLM responses.
 
-\### Agent
+### Stock Data Tool
 
+**File:** `app/tools.py`
 
+The `get_stock_data` tool retrieves:
 
-`app/agent.py`
+-   Company name
+-   Current stock price
+-   P/E ratio
+-   Market capitalization
+-   52-week high
+-   52-week low
+-   Retrieval timestamp
 
+Provider selection is based on the ticker:
 
+``` text
+Ticker ends with .NS or .BO
+        |
+        +----> Indian API
 
-Creates the LangChain agent using Gemini and the financial research tools.
+All other supported tickers
+        |
+        +----> Finnhub
+```
 
+### News Search Tool
 
+**File:** `app/tools.py`
 
-The agent uses native tool calling and structured output rather than manually parsing free-form LLM responses.
+The `get_recent_news` tool searches the web for recent financial news
+related to the requested company or ticker.
 
+The tool returns up to three relevant search results containing title,
+URL, and search-result summary.
 
+### Pydantic Schemas
 
-\### Financial Data Tool
-
-
-
-`app/tools.py`
-
-
-
-Uses `yfinance` to retrieve:
-
-
-
-\- Current stock price
-
-\- P/E ratio
-
-\- Market capitalization
-
-\- 52-week high
-
-\- 52-week low
-
-
-
-\### News Search Tool
-
-
-
-Uses DDGS to search the web for recent financial news related to a company or ticker.
-
-
-
-\### Pydantic Schemas
-
-
-
-`app/schemas.py`
-
-
+**File:** `app/schemas.py`
 
 Defines the validated response structure:
 
+-   `FinancialMetrics`
+-   `RiskAnalysis`
+-   `Source`
+-   `CompanyOverview`
 
+The structured response contains company information, financial metrics,
+news sentiment, potential risks, sources, and a data timestamp.
 
-\- Company information
+### FastAPI
 
-\- Financial metrics
-
-\- News sentiment
-
-\- Potential risks
-
-\- Sources
-
-\- Data timestamp
-
-
-
-\### FastAPI
-
-
-
-`app/main.py`
-
-
+**File:** `app/main.py`
 
 Provides:
 
-
-
-```text
-
+``` text
 GET /
-
 GET /health
-
 GET /research?ticker=AAPL
-
 ```
 
+## API Usage
 
+Start the application locally:
 
-\## API Usage
-
-
-
-Start the server:
-
-
-
-```bash
-
+``` powershell
+.venv\Scriptsctivate
 uvicorn app.main:app --reload
-
 ```
 
+Open:
 
+``` text
+http://127.0.0.1:8000
+```
 
-Open the interactive API documentation:
+Interactive API documentation:
 
-
-
-```text
-
+``` text
 http://127.0.0.1:8000/docs
-
 ```
 
+Example requests:
 
-
-Example request:
-
-
-
-```text
-
+``` text
 GET /research?ticker=AAPL
-
+GET /research?ticker=RELIANCE.NS
 ```
 
+## Example Response
 
+Values change according to current market data and model analysis.
 
-Example response structure:
-
-
-
-```json
-
+``` json
 {
-
-&#x20; "ticker": "AAPL",
-
-&#x20; "company\_name": "Apple Inc.",
-
-&#x20; "financial\_metrics": {
-
-&#x20;   "current\_price": 332.89,
-
-&#x20;   "pe\_ratio": 38.17,
-
-&#x20;   "market\_cap": 4858257080320,
-
-&#x20;   "week\_52\_high": 345.34,
-
-&#x20;   "week\_52\_low": 243.42
-
-&#x20; },
-
-&#x20; "risk\_analysis": {
-
-&#x20;   "recent\_news\_sentiment": "Positive",
-
-&#x20;   "potential\_risks": \[
-
-&#x20;     "Elevated valuation"
-
-&#x20;   ]
-
-&#x20; },
-
-&#x20; "sources": \[],
-
-&#x20; "data\_timestamp": "2026-10-06T00:00:00Z"
-
+  "ticker": "AAPL",
+  "company_name": "Apple Inc",
+  "financial_metrics": {
+    "current_price": 333.63,
+    "pe_ratio": 37.76,
+    "market_cap": 4868618.5,
+    "week_52_high": 345.34,
+    "week_52_low": 243.42
+  },
+  "risk_analysis": {
+    "recent_news_sentiment": "Neutral",
+    "potential_risks": [
+      "High valuation multiples",
+      "Macroeconomic pressures impacting consumer electronics demand",
+      "Regulatory and antitrust concerns"
+    ]
+  },
+  "sources": [],
+  "data_timestamp": "2026-10-06T20:35:32+00:00"
 }
-
 ```
 
+## Health Check
 
-
-Values in the response change according to the latest available market data and model analysis.
-
-
-
-\## Health Check
-
-
-
-The API includes a health endpoint:
-
-
-
-```text
-
+``` text
 GET /health
-
 ```
 
+Expected response:
 
-
-Response:
-
-
-
-```json
-
+``` json
 {
-
-&#x20; "status": "healthy",
-
-&#x20; "service": "financial-research-agent"
-
+  "status": "healthy",
+  "service": "financial-research-agent"
 }
-
 ```
 
-
-
-\## Testing
-
-
-
-Run the automated tests:
-
-
-
-```bash
-
-pytest -v
-
-```
-
-
-
-Current test coverage includes:
-
-
-
-\- Pydantic schema validation
-
-\- Stock-data tool execution
-
-
-
-Expected result:
-
-
-
-```text
-
-2 passed
-
-```
-
-
-
-\## Environment Setup
-
-
+## Environment Setup
 
 Create a virtual environment:
 
-
-
-```bash
-
+``` powershell
 python -m venv .venv
-
 ```
-
-
 
 Activate it on Windows:
 
-
-
-```cmd
-
-.venv\\Scripts\\activate
-
+``` powershell
+.venv\Scripts\Activate.ps1
 ```
-
-
 
 Install dependencies:
 
-
-
-```bash
-
+``` powershell
 pip install -r requirements.txt
-
 ```
 
+Create `.env`:
 
-
-Create a `.env` file:
-
-
-
-```env
-
-GEMINI\_API\_KEY=your\_gemini\_api\_key\_here
-
+``` env
+GEMINI_API_KEY=your_gemini_api_key_here
+FINNHUB_API_KEY=your_finnhub_api_key_here
+INDIAN_API_KEY=your_indian_api_key_here
 ```
 
+Never commit `.env` to GitHub. Use `.env.example` as the safe template.
 
+## Configuration
 
-Never commit the `.env` file to GitHub.
+**File:** `app/config.py`
 
+Required environment variables:
 
-
-\## Configuration
-
-
-
-The Gemini model is configured in:
-
-
-
-```text
-
-app/config.py
-
+``` text
+GEMINI_API_KEY
+FINNHUB_API_KEY
+INDIAN_API_KEY
 ```
 
+The configured Gemini model is:
 
+``` text
+gemini-3.5-flash-lite
+```
 
-The API key is loaded from the environment using `python-dotenv`.
+## Testing
 
+Run:
 
+``` powershell
+pytest -v
+```
 
-\## Error Handling
+Current automated tests cover:
 
+-   Pydantic schema validation
+-   Stock-data tool execution
 
+Expected result:
 
-The API includes handling for:
+``` text
+2 passed
+```
 
+The production application was also manually verified with `AAPL` and
+`RELIANCE.NS`.
 
+## Error Handling
 
-\- Invalid or empty ticker input
+The application handles:
 
-\- Financial data retrieval failures
+-   Empty ticker input
+-   Financial data retrieval failures
+-   Web-search failures
+-   Gemini API failures
+-   Gemini API quota/rate-limit errors
+-   Invalid external API responses
 
-\- Web-search failures
+Gemini quota exhaustion is converted into an HTTP `429` response rather
+than exposing internal stack traces.
 
-\- Gemini API failures
+## Deployment
 
-\- Gemini API quota/rate-limit errors
+The application is deployed on Render.
 
+Build command:
 
+``` bash
+pip install -r requirements.txt
+```
 
-Gemini quota exhaustion is returned as an HTTP `429` response instead of exposing internal stack traces to the API consumer.
+Start command:
 
+``` bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
 
+Required Render environment variables:
 
-\## Limitations
+``` text
+GEMINI_API_KEY
+FINNHUB_API_KEY
+INDIAN_API_KEY
+PYTHON_VERSION=3.13.1
+```
 
+Automatic deployment is enabled from the GitHub `main` branch.
 
+## Production Verification
 
-\- Financial information is retrieved from external services and may be delayed or unavailable.
+### AAPL
 
-\- Web-search results depend on the availability and quality of indexed sources.
+Successfully verified:
 
-\- Gemini API usage is subject to the configured project's rate limits and quotas.
+-   Current price
+-   P/E ratio
+-   Market capitalization
+-   52-week high
+-   52-week low
+-   Risk analysis
+-   News sentiment
+-   Sources
+-   Timestamp
 
-\- This project is intended for educational and research purposes and does not provide financial advice.
+### RELIANCE.NS
 
+Successfully verified:
 
+-   NSE current price
+-   P/E ratio
+-   Market capitalization
+-   52-week high
+-   52-week low
+-   Risk analysis
+-   News sentiment
+-   Sources
+-   Timestamp
 
-\## Future Improvements
+Both tests succeeded on the live Render deployment.
 
+## Git Versioning
 
+The working production milestone can be tagged with:
 
-Possible extensions include:
+``` bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
+This creates a stable Git milestone for the first successfully deployed
+version.
 
+## Limitations
 
-\- Historical price trend analysis
+-   External market data may be delayed, incomplete, or temporarily
+    unavailable.
+-   Market coverage depends on the respective data providers.
+-   Web-search results depend on indexed sources and search-provider
+    availability.
+-   Gemini usage is subject to API quotas and rate limits.
+-   AI-generated risk analysis is not guaranteed to be complete or
+    correct.
+-   This project is intended for educational and research purposes and
+    does not provide financial advice.
 
-\- Technical indicators such as RSI and moving averages
+## Future Improvements
 
-\- SEC filing analysis
+-   Historical price trend analysis
+-   RSI and moving averages
+-   SEC filing analysis
+-   Indian regulatory filing analysis
+-   Financial statement analysis
+-   Multi-company comparison
+-   Portfolio-level research
+-   Persistent research history
+-   Redis/API caching
+-   Background task execution
+-   Authentication and API keys
+-   Docker deployment
+-   More comprehensive automated tests
+-   Streaming research progress
+-   Scheduled research reports
+-   PDF report generation
+-   More robust source attribution
+-   Provider fallback strategies
 
-\- Financial statement analysis
+## Resume-Relevant Highlights
 
-\- Portfolio-level research
+This project demonstrates experience with:
 
-\- Multi-company comparison
+-   AI agent development
+-   LLM tool calling
+-   Structured LLM outputs
+-   Pydantic schema validation
+-   REST API development
+-   External API integration
+-   Financial-data provider integration
+-   Web search integration
+-   Error handling
+-   Environment-based secret management
+-   Automated testing
+-   Cloud deployment
+-   Production debugging
+-   Multi-market data routing
 
-\- Persistent research history
+Suggested resume description:
 
-\- Redis/API caching
+> **Autonomous Financial Research Agent** --- Built an AI-powered
+> financial research agent using Python, LangChain, Gemini 3.5
+> Flash-Lite, FastAPI, Finnhub, Indian market APIs, and web search;
+> implemented tool calling and structured Pydantic outputs to retrieve
+> market metrics, analyze recent news, identify potential risks, and
+> serve research through a deployed REST API.
 
-\- Background task execution
-
-\- Authentication and API keys
-
-\- Docker deployment
-
-\- Cloud deployment
-
-\- Automated report generation
-
-
-
-\## Disclaimer
-
-
+## Disclaimer
 
 This project is an educational financial research system.
 
-
-
-It does not constitute investment, financial, tax, or legal advice. Users should independently verify information before making financial decisions.
-
-
-
+It does not constitute investment, financial, tax, or legal advice.
+Users should independently verify information before making financial
+decisions.
